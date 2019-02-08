@@ -221,6 +221,7 @@ add_image_size( 'resp640', 640, 9999 );
 add_image_size( 'resp480', 480, 9999 );
 add_image_size( 'resp360', 360, 9999 );
 add_image_size( 'resp300', 300, 9999 );
+
 if (class_exists('ACF')) {
     add_filter( 'acf/load_field/type=image', function( $field ) {
         $field['return_format'] = 'id';
@@ -228,9 +229,11 @@ if (class_exists('ACF')) {
         return $field;
     } );
 }
+
 add_filter( 'timber/twig', function( \Twig_Environment $twig ) {
     $twig->addFunction( new Timber\Twig_Function( 'responsive_image', 'responsive_image' ) );
 
     return $twig;
 } );
+
 new StarterSite();
