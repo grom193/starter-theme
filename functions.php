@@ -201,6 +201,18 @@ function add_tags_to_head() {
 
     echo $output;
 }
+
+/**
+ * @param [] $classes
+ *
+ * @return array
+ */
+function add_body_class($classes) {
+
+    return $classes;
+}
+
+add_filter( 'body_class', 'add_body_class' );
 add_filter( 'timber/twig', function( \Twig_Environment $twig ) {
     $twig->addFunction( new Timber\Twig_Function( 'responsive_image', 'responsive_image' ) );
 
