@@ -156,4 +156,49 @@ function responsive_image($imageId, $imageSize) {
     return wp_image_add_srcset_and_sizes($imageHTML, $imageMetaData, $imageId);
 }
 
+add_action('wp_head','add_to_head_dns_prefetch');
+add_action('wp_head','add_to_head_preload');
+add_action('wp_head','add_tags_to_head');
+
+function add_to_head_dns_prefetch() {
+    $sites_url = [
+        'http://fonts.google.com',
+    ];
+
+    $output = null;
+    if (count($sites_url) > 0) {
+        $def = '<link rel="dns-prefetch" href="%s"/>';
+        foreach ( $sites_url as $item ) {
+            $output .= sprintf($def, $item);
+        }
+    }
+
+    echo $output;
+}
+
+function add_to_head_preload() {
+    $preloads = [
+        [
+            'path' => '/assets/fonts/fontello.woff2',
+            'attributes' => 'as="font" crossorigin',
+        ],
+    ];
+
+    $output = null;
+    if (count($preloads) > 0) {
+        $def = '<link rel="preload" href="' . get_template_directory_uri() . '%s" %s />';
+        foreach ( $preloads as $item ) {
+            $output .= sprintf($def, $item['path'], $item['attributes']);
+        }
+    }
+
+    echo $output;
+}
+
+function add_tags_to_head() {
+
+    $output = '<meta name="theme-color" content="#005D34">';
+
+    echo $output;
+}
 new StarterSite();
