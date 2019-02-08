@@ -1,10 +1,25 @@
 {% if menu %}
-	<ul>
-	{% for item in menu %}
-		<li class="{{ item.classes | join(' ') }}">
-			<a target="{{ item.target }}" href="{{ item.link }}">{{ item.title }}</a>
-			{% include "menu.twig" with {'menu': item.get_children} %}
-		</li>
-	{% endfor %}
-	</ul>
+    {% if menu.0.menu_item_parent == 0 %}
+        {% set role = 'menubar' %}
+    {% else %}
+        {% set role = 'menu' %}
+    {% endif %}
+    {% if menu_options.menu_class %}
+        {% set menu_classes = menu_options.menu_class %}
+    {% else %}
+        {% set menu_classes = '' %}
+    {% endif %}
+    <ul class="{{ menu_orientation }} menu{{ menu_classes }}" role="{{ role }}" {% if menu_name %} aria-label="{{ menu_name }}"{% endif %}>
+    {% for item in menu %}
+        {% if menu.0.menu_item_parent == 0 and loop.first %}
+            {% set tabindex = 'tabindex="0"' %}
+        {% else %}
+            {% set tabindex = 'tabindex="-1"' %}
+        {% endif %}
+        <li class="{{ item.classes | join(' ') }}" role="none">
+            <a target="{{ item.target }}" href="{{ item.link }}" role="menuitem" {{ tabindex }} {% if item.menu_item_parent !=0 %}aria-haspopup="true" aria-expanded="false"{% endif %}>{{ item.title }}</a>
+            {% include "menu.twig" with {'menu': item.get_children, 'menu_options': ''} %}
+        </li>
+    {% endfor %}
+    </ul>
 {% endif %}
