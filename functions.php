@@ -127,7 +127,33 @@ class StarterSite extends Timber\Site {
 
 		return $twig;
 	}
+}
 
+/**
+ * My custom Twig functionality.
+ *
+ * @param Twig_Environment $twig
+ * @return $twig
+ */
+add_filter( 'timber/twig', function( \Twig_Environment $twig ) {
+    $twig->addFunction( new Timber\Twig_Function( 'responsive_image', 'responsive_image' ) );
+
+    return $twig;
+} );
+
+/**
+ * @param int $imageId
+ * @param string|array $imageSize
+ *
+ * @return string
+ */
+function responsive_image($imageId, $imageSize) {
+    $imgSrc = wp_get_attachment_image_url($imageId, $imageSize);
+    $imgAlt = get_post_meta($imageId, '_wp_attachment_image_alt', true);
+    $imageHTML = "<img src=\"{$imgSrc}\" alt=\"{$imgAlt}\"/>";
+    $imageMetaData = wp_get_attachment_metadata($imageId);
+
+    return wp_image_add_srcset_and_sizes($imageHTML, $imageMetaData, $imageId);
 }
 
 new StarterSite();
