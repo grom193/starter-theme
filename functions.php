@@ -201,4 +201,9 @@ function add_tags_to_head() {
 
     echo $output;
 }
+add_filter( 'timber/twig', function( \Twig_Environment $twig ) {
+    $twig->addFunction( new Timber\Twig_Function( 'responsive_image', 'responsive_image' ) );
+
+    return $twig;
+} );
 new StarterSite();
