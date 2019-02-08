@@ -213,6 +213,14 @@ function add_body_class($classes) {
 }
 
 add_filter( 'body_class', 'add_body_class' );
+
+add_image_size( 'resp1200', 1200, 9999 );
+add_image_size( 'resp1000', 1000, 9999 );
+add_image_size( 'resp800', 800, 9999 );
+add_image_size( 'resp640', 640, 9999 );
+add_image_size( 'resp480', 480, 9999 );
+add_image_size( 'resp360', 360, 9999 );
+add_image_size( 'resp300', 300, 9999 );
 add_filter( 'timber/twig', function( \Twig_Environment $twig ) {
     $twig->addFunction( new Timber\Twig_Function( 'responsive_image', 'responsive_image' ) );
 
