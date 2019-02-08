@@ -9,7 +9,7 @@
     {% else %}
         {% set menu_classes = '' %}
     {% endif %}
-    <ul class="{{ menu_orientation }} menu{{ menu_classes }}" role="{{ role }}" {% if menu_name %} aria-label="{{ menu_name }}"{% endif %}>
+    <ul id="mobile-menu" aria-labelledby="mobile-menu-button" class="menu {{ menu_classes }}" role="{{ role }}" {% if menu_name %}aria-label="{{ menu_name }}{% endif %}">
     {% for item in menu %}
         {% if menu.0.menu_item_parent == 0 and loop.first %}
             {% set tabindex = 'tabindex="0"' %}
@@ -17,7 +17,7 @@
             {% set tabindex = 'tabindex="-1"' %}
         {% endif %}
         <li class="{{ item.classes | join(' ') }}" role="none">
-            <a target="{{ item.target }}" href="{{ item.link }}" role="menuitem" {{ tabindex }} {% if item.menu_item_parent !=0 %}aria-haspopup="true" aria-expanded="false"{% endif %}>{{ item.title }}</a>
+            <a target="{{ item.target }}" href="{{ item.link }}" role="menuitem" {{ tabondex }}  {% if item.menu_item_parent !=0 %}aria-haspopup="true" aria-expanded="false"{% endif %}>{{ item.title }}</a>
             {% include "menu.twig" with {'menu': item.get_children, 'menu_options': ''} %}
         </li>
     {% endfor %}
