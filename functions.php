@@ -120,7 +120,9 @@ class StarterSite extends Timber\Site {
 
     /** This is where you can add your own functions to twig.
      *
-     * @param string $twig get extension.
+     * @param Asm89\Twig\ $twig .
+     *
+     * @return
      */
     public function add_to_twig( $twig ) {
         $twig->addExtension( new Twig_Extension_StringLoader() );
@@ -206,6 +208,9 @@ add_action('wp_head','add_to_head_dns_prefetch');
 add_action('wp_head','add_to_head_preload');
 add_action('wp_head','add_tags_to_head');
 
+/**
+ *
+ */
 function add_to_head_dns_prefetch() {
     $sites_url = [
         'http://fonts.google.com',
@@ -222,6 +227,9 @@ function add_to_head_dns_prefetch() {
     echo $output;
 }
 
+/**
+ *
+ */
 function add_to_head_preload() {
     $preloads = [
         [
@@ -260,14 +268,6 @@ function add_body_class($classes) {
 
 add_filter( 'body_class', 'add_body_class' );
 
-add_image_size( 'resp1200', 1200, 9999 );
-add_image_size( 'resp1000', 1000, 9999 );
-add_image_size( 'resp800', 800, 9999 );
-add_image_size( 'resp640', 640, 9999 );
-add_image_size( 'resp480', 480, 9999 );
-add_image_size( 'resp360', 360, 9999 );
-add_image_size( 'resp300', 300, 9999 );
-
 if (class_exists('ACF')) {
     add_filter( 'acf/load_field/type=image', function( $field ) {
         $field['return_format'] = 'id';
@@ -276,26 +276,42 @@ if (class_exists('ACF')) {
     } );
 }
 
-function generate_responsive_image($attachment_id) {
-    $picture = '<picture>%s</picture>';
-    $source = '<source >';
+add_filter( 'timmy/sizes', 'timmy_filter');
+
+/**
+ * @param $sizes
+ *
+ * @return array
+ */
+function timmy_filter($sizes) {
+    $config = apply_filters('get_config_for_responsive_picture', [] );
+
+    $timmy_config = [];
+    foreach ($config as $alias => $value) {
+        if (isset($value['convert']) && count($value['convert']) > 0) {
+            $timmy_config[$alias] = array_merge($value, $value['convert']);
+        } else {
+            $timmy_config[$alias] = $value;
+        }
+    }
+
+    return $timmy_config;
 }
 
+/**
+ * @param \Timber\Image $timber_image
+ * @param string $alias
+ *
+ * @return string
+ */
 function get_responsive_picture(Timber\Image $timber_image, $alias) {
-//    function timmy_filter($config) {
-//
-//        return $config;
-//    }
-
-//    add_filter( 'timmy/sizes', 'timmy_filter', $config);
-
-    $config = apply_filters('get_config_for_responsive_picture', array());
+    $config = apply_filters('get_config_for_responsive_picture', [] );
     $img = '<img %s alt="%s">';
     $source = '<source %s>';
     $output = '<picture>%s</picture>';
-    $img_output = '';
     $jpg_output = '';
     $webp_output = '';
+
     if (empty($alias) || !array_key_exists($alias, $config)) {
         $img_output = sprintf($img, 'src="' . $timber_image->src() . '"', $timber_image->alt());
 
@@ -310,16 +326,12 @@ function get_responsive_picture(Timber\Image $timber_image, $alias) {
         return sprintf($output, $img_output);
     }
 
-    if (isset($config[$alias]['convert']['webp'])) {
-        $timmy_config[$alias] = $config[$alias];
-        $timmy_config[$alias]['towebp'] = $config[$alias]['convert']['webp'];
+    if (isset($config[$alias]['convert']['towebp'])) {
         $srcset_sizes = get_timber_image_responsive_src($timber_image, $alias);
         $webp_output = sprintf($source, $srcset_sizes);
     }
 
-    if (isset($config[$alias]['convert']['jpg'])) {
-        $timmy_config[$alias] = $config[$alias];
-        $timmy_config[$alias]['tojpg'] = $config[$alias]['convert']['jpg'];
+    if (isset($config[$alias]['convert']['tojpg'])) {
         $srcset_sizes = get_timber_image_responsive_src($timber_image, $alias);
         $jpg_output = sprintf($source, $srcset_sizes);
     }
@@ -328,34 +340,33 @@ function get_responsive_picture(Timber\Image $timber_image, $alias) {
 }
 
 add_filter( 'get_config_for_responsive_picture', function( $sizes ) {
-    return array(
+    return [
         /**
          * The thumbnail size is used to show thumbnails in the backend.
          * You should always have an entry with the 'thumbnail' key.
          */
-        'resp800' => array(
-            'resize' => array( 800 ),
+        'resp800' => [
+            'resize' => [ 800 ],
             'sizes'  => '(min-width: 62rem) 33.333vw, 100vw',
             'name'   => 'resp800',
             'srcset' => [
                 [640],
                 [480],
                 [360],
-                [300]
+                [300],
             ],
             'generate_srcset_sizes' => true,
             'convert' => [
                 'towebp' => 100,
                 'tojpg' => '#FFFFFF',
             ]
-        ),
-    );
+        ],
+    ];
 } );
 
 add_filter( 'timber/twig', function( \Twig_Environment $twig ) {
     $twig->addFunction( new Timber\Twig_Function( 'responsive_image', 'responsive_image' ) );
     $twig->addFunction( new Timber\Twig_Function( 'get_image_srcset_sizes', 'get_image_srcset_sizes' ) );
-    $twig->addFunction( new Timber\Twig_Function( 'generate_responsive_image', 'generate_responsive_image' ) );
     $twig->addFilter( new Twig_SimpleFilter('get_responsive_picture', 'get_responsive_picture'));
 
     return $twig;
@@ -363,57 +374,3 @@ add_filter( 'timber/twig', function( \Twig_Environment $twig ) {
 
 new StarterSite();
 new Timmy\Timmy();
-//
-//
-//add_filter( 'timmy/sizes', function( $sizes ) {
-//    return array(
-//        /**
-//         * The thumbnail size is used to show thumbnails in the backend.
-//         * You should always have an entry with the 'thumbnail' key.
-//         */
-//        'resp800' => array(
-//            'resize' => array( 800 ),
-//            'sizes'  => '(min-width: 62rem) 33.333vw, 100vw',
-//            'name'   => 'resp800',
-//            'srcset' => [
-//                [640],
-//                [480],
-//                [360],
-//                [300]
-//            ],
-//            'towebp' => 100,
-//            'generate_srcset_sizes' => true,
-//        ),
-//    );
-//} );
-
-add_filter( 'wp_generate_attachment_metadata', 'generate_web_jpg_for_image', 10, 2 );
-/**
- * @param array $metadata
- * @param int $attachment_id
- *
- * @return mixed
- */
-//function generate_web_jpg_for_image($metadata, $attachment_id ) {
-//    $dir = wp_get_upload_dir();
-//    $file_info = wp_check_filetype($metadata['file']);
-//    $meta_data['webp'] = $metadata;
-//    if (!empty($metadata['sizes'])) {
-//        foreach ($metadata['sizes'] as $key => $size) {
-//            $file_src = $dir['path'] . '/' . $size['file'];
-//            if ($file_info['ext'] === 'png') {
-//                $meta_data['webp']['sizes'][$key]['url'] = \Timber\ImageHelper::img_to_webp($file_src, 100);
-//                $meta_data['jpg']['sizes'][$key]['url'] = \Timber\ImageHelper::img_to_jpg($file_src);
-//            } else if ($file_info['ext'] === 'jpg' || $file_info['ext'] === 'jpeg') {
-//                $meta_data['webp']['sizes'][$key]['url'] = \Timber\ImageHelper::img_to_webp($file_src, 100);
-//                wp_insert_attachment($args, $file_path);
-//            }
-//        }
-//    }
-//
-//    $metadata['pictures_source'] = $meta_data;
-//    wp_insert_attachment($args, $file_path);
-//    update_post_meta($attachment_id, '_wp_attachment_metadata', serialize($meta_data));
-//
-//    return $metadata;
-//}

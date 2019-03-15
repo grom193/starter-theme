@@ -3,7 +3,7 @@
 {% block content %}
 	<h2 class="h2"><a href="{{post.link}}">{{post.title}}</a></h2>
 		<p>{{post.preview.length(25)}}</p>
-		{% if post.thumbnail.src %}
-			<img src="{{post.thumbnail.src}}" />
-		{% endif %}
+	{% if post.thumbnail.src %}
+		{{ post.thumbnail|get_responsive_picture('resp800') }}
+	{% endif %}
 {% endblock %}
