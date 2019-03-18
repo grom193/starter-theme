@@ -194,7 +194,7 @@ function add_to_head_dns_prefetch() {
 function add_to_head_preload() {
     $preloads = [
         [
-            'path' => '/assets/fonts/fontello.woff2',
+            'path' => '',
             'attributes' => 'as="font" crossorigin',
         ],
     ];
@@ -203,7 +203,10 @@ function add_to_head_preload() {
     if (count($preloads) > 0) {
         $def = '<link rel="preload" href="' . get_template_directory_uri() . '%s" %s />';
         foreach ( $preloads as $item ) {
-            $output .= sprintf($def, $item['path'], $item['attributes']);
+            if (isset($item['path']) && $item['path'] != '') {
+                $attribute = isset($item['attributes']) ? $item['attributes'] : '';
+                $output .= sprintf($def, $item['path'], $attribute);
+            }
         }
     }
 
@@ -212,7 +215,7 @@ function add_to_head_preload() {
 
 function add_tags_to_head() {
 
-    $output = '<meta name="theme-color" content="#005D34">';
+    $output = '<meta name="theme-color" content="">';
 
     echo $output;
 }
