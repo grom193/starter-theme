@@ -2,7 +2,6 @@
 
 import plugins       from 'gulp-load-plugins';
 import yargs         from 'yargs';
-// import browser       from 'browser-sync';
 import gulp          from 'gulp';
 import rimraf        from 'rimraf';
 import yaml          from 'js-yaml';
@@ -94,7 +93,6 @@ function sassGrid() {
       .pipe(gulp.dest(PATHS.dist + '/css'))
       .pipe($.if(REVISIONING && PRODUCTION || REVISIONING && DEV, $.rev.manifest()))
       .pipe(gulp.dest(PATHS.dist + '/css'))
-      // .pipe(browser.reload({ stream: true }))
       ;
 }
 function sass() {
@@ -114,7 +112,6 @@ function sass() {
     .pipe(gulp.dest(PATHS.dist + '/css'))
     .pipe($.if(REVISIONING && PRODUCTION || REVISIONING && DEV, $.rev.manifest()))
     .pipe(gulp.dest(PATHS.dist + '/css'))
-    // .pipe(browser.reload({ stream: true }))
     ;
 }
 
@@ -138,8 +135,6 @@ const webpack = {
     log('[webpack]', stats.toString({
       colors: true,
     }));
-
-    //browser.reload();
   },
 
   build() {
@@ -240,24 +235,6 @@ gulp.task('phpcbf', function () {
   .pipe(gulp.dest('.'));
 });
 
-// Start BrowserSync to preview the site in
-function server(done) {
-  browser.init({
-    proxy: BROWSERSYNC.url,
-
-    ui: {
-      port: 8080
-    },
-  });
-  done();
-}
-
-// Reload the browser with BrowserSync
-function reload(done) {
-  browser.reload();
-  done();
-}
-
 // Watch for changes to static assets, pages, Sass, and JavaScript
 function watch() {
   gulp.watch(PATHS.assets, copy);
@@ -267,11 +244,8 @@ function watch() {
   gulp.watch('src/scss/**/*.scss', sassGrid())
       .on('change', path => log('File ' + colors.bold(colors.magenta(path)) + ' changed.'))
       .on('unlink', path => log('File ' + colors.bold(colors.magenta(path)) + ' was removed.'));
-  // gulp.watch('**/*.php', reload)
-  //   .on('change', path => log('File ' + colors.bold(colors.magenta(path)) + ' changed.'))
-  //   .on('unlink', path => log('File ' + colors.bold(colors.magenta(path)) + ' was removed.'));
-  // gulp.watch('src/images/**/*', gulp.series(images, reload));
-  // gulp.watch('src/fonts/**/*', gulp.series(fonts, reload));
+  gulp.watch('src/images/**/*', gulp.series(images));
+  gulp.watch('src/fonts/**/*', gulp.series(fonts));
 }
 
 // Build the "dist" folder by running all of the below tasks
@@ -280,7 +254,7 @@ gulp.task('build',
 
 // Build the site, run the server, and watch for file changes
 gulp.task('default',
-  gulp.series('build', server, gulp.parallel('webpack:watch', watch)));
+  gulp.series('build', gulp.parallel('webpack:watch', watch)));
 
 // Package task
 gulp.task('package',
