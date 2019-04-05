@@ -117,6 +117,21 @@ function sass() {
     ;
 }
 
+const svgConfig = {
+  mode: {
+    symbol: {
+      dest: "",
+      sprite: "sprite.symbol.svg",
+    }
+  }
+};
+
+function svg() {
+  return gulp.src('src/svg/*.svg')
+      .pipe(svgSprite(svgConfig))
+      .pipe(gulp.dest('assets/images/'));
+}
+
 // Combine JavaScript into one file
 // In production, the file is minified
 const webpack = {
