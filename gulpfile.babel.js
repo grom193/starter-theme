@@ -269,11 +269,12 @@ function watch() {
     .on('unlink', path => log('File ' + colors.bold(colors.magenta(path)) + ' was removed.'));
   gulp.watch('src/images/**/*', gulp.series(images));
   gulp.watch('src/fonts/**/*', gulp.series(fonts));
+  gulp.watch('src/svg/**/*.svg', gulp.series(svg));
 }
 
 // Build the "dist" folder by running all of the below tasks
 gulp.task('build',
-  gulp.series(clean, gulp.parallel(sassGrid, sass, 'webpack:build', images, fonts, copy)));
+  gulp.series(clean, gulp.parallel(sass, 'webpack:build', svg, images, fonts, copy)));
 
 // Build the site, run the server, and watch for file changes
 gulp.task('default',
