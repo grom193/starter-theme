@@ -160,25 +160,21 @@ class StarterSite extends Timber\Site {
 if ( ! function_exists( 'timber_enqueue_scripts' ) ) :
     function timber_enqueue_scripts() {
 
-        wp_enqueue_style( 'main-stylesheet', get_stylesheet_directory_uri() . '/assets/css/grid-mob.css', array(), '', '' );
-        wp_enqueue_style( 'main-stylesheet', get_stylesheet_directory_uri() . '/assets/css/grid-tablet.css', array(), '', '' );
-        wp_enqueue_style( 'main-stylesheet', get_stylesheet_directory_uri() . '/assets/css/grid-desktop.css', array(), '', '' );
-        wp_enqueue_style( 'main-stylesheet', get_stylesheet_directory_uri() . '/assets/css/app.css', array(), '', 'all' );
+        wp_enqueue_style( 'small-grid-stylesheet', get_stylesheet_directory_uri() . '/assets/css/grid-small.css', array(), '', 'screen and (max-width:640px)' );
+        wp_enqueue_style( 'small-grid-stylesheet', get_stylesheet_directory_uri() . '/assets/css/grid-medium.css', array(), '', 'screen and (mim-width:641px) and (max-width:999px)' );
+        wp_enqueue_style( 'main-grid-stylesheet', get_stylesheet_directory_uri() . '/assets/css/grid.css', array(), '', 'screen and (min-width:1000px)' );
+        wp_deregister_script( 'jquery' );
+        wp_deregister_script( 'jquery-migrate' );
+        wp_dequeue_script( 'wp-embed' );
+        wp_dequeue_style( 'wp-block-library' );
+        wp_deregister_style( 'wp-block-library' );
 
-        wp_enqueue_script( 'foundation', get_stylesheet_directory_uri() . '/assets/js/app.js', '', '', true );
-
-        wp_deregister_script('jquery-ui-core');
-        wp_deregister_script('jquery');
-        wp_deregister_script('jquery-migrate');
-        wp_enqueue_script('jquery', 'https://code.jquery.com/jquery-3.3.1.min.js', '', '', true);
-        wp_enqueue_script('jquery-migrate', 'https://code.jquery.com/jquery-migrate-3.0.1.min.js', '', '', true);
-        wp_enqueue_script('jquery-ui-core', 'https://code.jquery.com/ui/1.12.1/jquery-ui.min.js', '', '', true);
+        wp_enqueue_script( 'jquery', get_stylesheet_directory_uri() . '/assets/js/app.js', '', '', true );
 
         // Add the comment-reply library on pages where it is necessary
         if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
             wp_enqueue_script( 'comment-reply' );
         }
-
     }
 
     add_action( 'wp_enqueue_scripts', 'timber_enqueue_scripts' );
