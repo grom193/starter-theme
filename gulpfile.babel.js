@@ -13,6 +13,7 @@ import webpack2      from 'webpack';
 import named         from 'vinyl-named';
 import log           from 'fancy-log';
 import colors        from 'ansi-colors';
+import svgSprite     from 'gulp-svg-sprite';
 
 // Load all Gulp plugins into one variable
 const $ = plugins();
