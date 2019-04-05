@@ -95,6 +95,7 @@ function sassGrid() {
       .pipe(gulp.dest(PATHS.dist + '/css'))
       .pipe($.if(REVISIONING && PRODUCTION || REVISIONING && DEV, $.rev.manifest()))
       .pipe(gulp.dest(PATHS.dist + '/css'))
+      // .pipe(browser.reload({ stream: true }))
       ;
 }
 function sass() {
@@ -114,6 +115,7 @@ function sass() {
     .pipe(gulp.dest(PATHS.dist + '/css'))
     .pipe($.if(REVISIONING && PRODUCTION || REVISIONING && DEV, $.rev.manifest()))
     .pipe(gulp.dest(PATHS.dist + '/css'))
+    // .pipe(browser.reload({ stream: true }))
     ;
 }
 
@@ -152,6 +154,8 @@ const webpack = {
     log('[webpack]', stats.toString({
       colors: true,
     }));
+
+    //browser.reload();
   },
 
   build() {
