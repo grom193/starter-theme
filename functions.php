@@ -190,10 +190,76 @@ function add_meta_tags_to_head() {
 }
 
 /**
- * @param string $src
+ * My custom Twig functionality.
+ *
+ * @param Twig_Environment $twig
+ * @return $twig
+ */
+add_filter( 'timber/twig', function( \Twig_Environment $twig ) {
+    $twig->addFunction( new Timber\Twig_Function( 'responsive_image', 'responsive_image' ) );
+
+    return $twig;
+} );
+
+/**
+ * @param int $imageId
+ * @param string|array $imageSize
  *
  * @return string
  */
+function responsive_image($imageId, $imageSize) {
+    $imgSrc = wp_get_attachment_image_url($imageId, $imageSize);
+    $imgAlt = get_post_meta($imageId, '_wp_attachment_image_alt', true);
+    $imageHTML = "<img src=\"{$imgSrc}\" alt=\"{$imgAlt}\"/>";
+    $imageMetaData = wp_get_attachment_metadata($imageId);
+
+    return wp_image_add_srcset_and_sizes($imageHTML, $imageMetaData, $imageId);
+}
+
+/**
+ * @param string $imageUrl
+ * @param \Timber\Image $timberImage
+ *
+ * @param string $imageSize
+ *
+ * @return null|string
+ */
+function get_image_srcset_sizes($image_src, $timberImage, $imageSize) {
+    if ( empty( $timberImage->sizes ) ) {
+        return null;
+    }
+
+    // Return early if we couldn't get the image source.
+    if ( ! $image_src ) {
+        return null;
+    }
+
+    if (!isset($timberImage->sizes[$imageSize])) {
+        return null;
+    }
+
+    $width = $timberImage->sizes[$imageSize]['width'];
+    $height = $timberImage->sizes[$imageSize]['height'];
+
+    $size_array = array( $width, $height );
+    $srcset = wp_calculate_image_srcset( $size_array, $image_src, $timberImage->image_meta, $timberImage->id );
+
+    if ( $srcset ) {
+        $sizes = wp_calculate_image_sizes( $size_array, $image_src, $timberImage->image_meta, $timberImage->id );
+    }
+
+    $attr = '';
+
+    if ( $srcset && $sizes ) {
+        // Format the 'srcset' and 'sizes' string and escape attributes.
+        $attr = sprintf( ' srcset="%s"', esc_attr( $srcset ) );
+
+        if ( is_string( $sizes ) ) {
+            $attr .= sprintf( ' sizes="%s"', esc_attr( $sizes ) );
+        }
+    }
+
+    return $attr;
 }
 
 add_action('wp_head','add_to_head_dns_prefetch', 100);
@@ -266,6 +332,11 @@ if (class_exists('ACF')) {
     } );
 }
 
+new StarterSite();
+new Timmy\Timmy();
+
+add_filter( 'timmy/sizes', 'timmy_filter');
+
 /**
  * @param $sizes
  *
@@ -327,15 +398,6 @@ function get_responsive_picture(Timber\Image $timber_image, $alias) {
     return sprintf($output, $jpg_output . $webp_output . $img_output);
 }
 
-new StarterSite();
-new Timmy\Timmy();
-
-add_filter( 'timber/twig', function( \Twig_Environment $twig ) {
-    $twig->addFunction( new Timber\Twig_Function( 'get_image_srcset_sizes', 'get_image_srcset_sizes' ) );
-    $twig->addFilter( new Twig_SimpleFilter('get_responsive_picture', 'get_responsive_picture'));
-
-    return $twig;
-} );
 add_filter( 'get_config_for_responsive_picture', function( $sizes ) {
     return [
         /**
@@ -360,7 +422,15 @@ add_filter( 'get_config_for_responsive_picture', function( $sizes ) {
         ],
     ];
 } );
-add_filter( 'timmy/sizes', 'timmy_filter');
+
+add_filter( 'timber/twig', function( \Twig_Environment $twig ) {
+    $twig->addFunction( new Timber\Twig_Function( 'responsive_image', 'responsive_image' ) );
+    $twig->addFunction( new Timber\Twig_Function( 'get_image_srcset_sizes', 'get_image_srcset_sizes' ) );
+    $twig->addFilter( new Twig_SimpleFilter('get_responsive_picture', 'get_responsive_picture'));
+
+    return $twig;
+} );
+
 remove_action('wp_head', 'print_emoji_detection_script', 7);
 remove_action('wp_print_styles', 'print_emoji_styles');
 
@@ -376,3 +446,4 @@ function vc_remove_wp_ver_css_js($src) {
 }
 add_filter( 'style_loader_src', 'vc_remove_wp_ver_css_js', 9999 );
 add_filter( 'script_loader_src', 'vc_remove_wp_ver_css_js', 9999 );
+
