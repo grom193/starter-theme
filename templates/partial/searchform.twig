@@ -1,0 +1,11 @@
+<form role="search" method="get" id="search-form" action="{{ form.action }}">
+    <label class="screen-reader-text" id="search-label" for="s">Search for:</label>
+    <input id="s" type="search" class="search-field" aria-labelledby="search-label" value="{{ form.input_value }}" name="s" />
+    <button type="submit" class="button-search" id="button-search" aria-label="button for submit search form"/>
+        <span>
+            <svg class="icon-search" width="26px" height="26px">
+                <use xlink:href="#search"></use>
+            </svg>
+        </span>
+    </button>
+</form>
