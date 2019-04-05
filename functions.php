@@ -31,6 +31,20 @@ if ( ! class_exists( 'Timmy\Timmy' ) ) {
 
     return;
 }
+
+add_action( 'widgets_init', 'register_my_widgets' );
+function register_my_widgets() {
+    register_sidebar(array(
+        'name' => 'Homepage Sidebar',
+        'id' => 'homepage-sidebar',
+        'description' => 'Appears as the sidebar on the custom homepage',
+        'before_widget' => '<div style="height: 280px"></div><li id="%1$s" class="widget %2$s">',
+        'after_widget' => '</li>',
+        'before_title' => '<h2 class="widgettitle">',
+        'after_title' => '</h2>',
+    ));
+}
+
 /**
  * Sets the directories (inside your theme) to find .twig files
  */
@@ -74,6 +88,7 @@ class StarterSite extends Timber\Site {
         $args = ['menu_class' => ''];
         $context['main_menu'] = new \Timber\Menu( 'main_menu', $args );
         $context['site'] = $this;
+        $context['svg_sprite'] = file_get_contents(get_stylesheet_directory() . '/assets/images/sprite.symbol.svg');
         return $context;
     }
 
