@@ -78,28 +78,7 @@ function copy() {
 
 // Compile Sass into CSS
 // In production, the CSS is compressed
-function sassGrid() {
-  return gulp.src('src/scss/grid.scss')
-      .pipe($.if(!PRODUCTION, $.sourcemaps.init()))
-      .pipe($.sass({
-        includePaths: PATHS.sass
-      })
-          .on('error', $.sass.logError))
-      .pipe($.autoprefixer({
-        browsers: COMPATIBILITY
-      }))
-
-      // .pipe($.if(PRODUCTION, $.cleanCss({ compatibility: 'ie9' })))
-      .pipe($.if(!PRODUCTION, $.sourcemaps.write()))
-      .pipe($.if(REVISIONING && PRODUCTION || REVISIONING && DEV, $.rev()))
-      .pipe(gulp.dest(PATHS.dist + '/css'))
-      .pipe($.if(REVISIONING && PRODUCTION || REVISIONING && DEV, $.rev.manifest()))
-      .pipe(gulp.dest(PATHS.dist + '/css'))
-      // .pipe(browser.reload({ stream: true }))
-      ;
-}
 function sass() {
-  return gulp.src('src/scss/app.scss')
     .pipe($.if(!PRODUCTION, $.sourcemaps.init()))
     .pipe($.sass({
       includePaths: PATHS.sass
@@ -280,9 +259,6 @@ function watch() {
   gulp.watch('src/scss/**/*.scss', sass)
     .on('change', path => log('File ' + colors.bold(colors.magenta(path)) + ' changed.'))
     .on('unlink', path => log('File ' + colors.bold(colors.magenta(path)) + ' was removed.'));
-  gulp.watch('src/scss/**/*.scss', sassGrid())
-      .on('change', path => log('File ' + colors.bold(colors.magenta(path)) + ' changed.'))
-      .on('unlink', path => log('File ' + colors.bold(colors.magenta(path)) + ' was removed.'));
   gulp.watch('src/images/**/*', gulp.series(images));
   gulp.watch('src/fonts/**/*', gulp.series(fonts));
 }
