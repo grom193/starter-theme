@@ -181,6 +181,14 @@ if ( ! function_exists( 'timber_enqueue_scripts' ) ) :
     add_action( 'wp_enqueue_scripts', 'timber_enqueue_scripts' );
 endif;
 
+add_action('wp_head','add_meta_tags_to_head');
+function add_meta_tags_to_head() {
+
+    $output='<meta name="google-site-verification" content="" />';
+
+    echo $output;
+}
+
 /**
  * @param string $src
  *
