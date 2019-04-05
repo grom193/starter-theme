@@ -1,12 +1,13 @@
 {% block html_head_container %}
 
 {% include 'html-header.twig' %}
-	{% block head %}
-	{% endblock %}
-	</head>
+    {% block head %}
+    {% endblock %}
+    </head>
 {% endblock %}
 
 	<body class="{{body_class}}" data-template="base.twig">
+        <span style="display: none;">{{ svg_sprite }}</span>
 		<header class="header" >
 			{% block header %}
 				<div class="wrapper">
@@ -25,25 +26,28 @@
 			{% endblock %}
 		</header>
 
-		<section id="content" role="main" class="content-wrapper">
-			{% if title %}<h1>{{ title }}</h1>{% endif %}
-			<div class="wrapper {{ sidebar_class }}">
-				{% block content %}
-					Sorry, no content
-				{% endblock %}
+        <section id="content" role="main" class="content-wrapper">
+            <div class="container">
+				<div class="row">
+					<div class="content">
+						{% block content %}
+							Sorry, no content
+						{% endblock %}
+					</div>
+					{% if sidebar %}
+						<aside class="sidebar {{ sidebar_class }}">
+							{{ sidebar }}
+						</aside>
+					{% endif %}
+				</div>
 			</div>
-			{% if sidebar %}
-				<aside class="layout-sidebar">
-					{{ sidebar }}
-				</aside>
-			{% endif %}
-		</section>
+        </section>
 
-		{% block footer %}
-			<footer id="footer" role="contentinfo">
-				{% include 'footer.twig' %}
-			</footer>
-			{{ function('wp_footer') }}
-		{% endblock %}
-	</body>
+        {% block footer %}
+            <footer id="footer" role="contentinfo">
+                {% include 'footer.twig' %}
+            </footer>
+            {{ function('wp_footer') }}
+        {% endblock %}
+    </body>
 </html>
