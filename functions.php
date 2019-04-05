@@ -196,12 +196,19 @@ function add_meta_tags_to_head() {
  */
 }
 
+add_action('wp_head','add_to_head_dns_prefetch', 100);
+add_action('wp_head','add_to_head_preload', 100);
+add_action('wp_head','add_tags_to_head', 100);
+
 /**
  *
  */
 function add_to_head_dns_prefetch() {
     $sites_url = [
-        'http://fonts.google.com',
+        '//fonts.google.com',
+        '//googleapis.com',
+        '//fonts.googleapis.com',
+        '//fonts.gstatic.com'
     ];
 
     $output = null;
@@ -219,21 +226,13 @@ function add_to_head_dns_prefetch() {
  *
  */
 function add_to_head_preload() {
-    $preloads = [
-        [
-            'path' => '',
-            'attributes' => 'as="font" crossorigin',
-        ],
-    ];
+    $preloads = [];
 
     $output = null;
     if (count($preloads) > 0) {
         $def = '<link rel="preload" href="' . get_template_directory_uri() . '%s" %s />';
         foreach ( $preloads as $item ) {
-            if (isset($item['path']) && $item['path'] != '') {
-                $attribute = isset($item['attributes']) ? $item['attributes'] : '';
-                $output .= sprintf($def, $item['path'], $attribute);
-            }
+            $output .= sprintf($def, $item['path'], $item['attributes']);
         }
     }
 
@@ -377,6 +376,3 @@ function vc_remove_wp_ver_css_js($src) {
 }
 add_filter( 'style_loader_src', 'vc_remove_wp_ver_css_js', 9999 );
 add_filter( 'script_loader_src', 'vc_remove_wp_ver_css_js', 9999 );
-add_action('wp_head','add_to_head_dns_prefetch');
-add_action('wp_head','add_to_head_preload');
-add_action('wp_head','add_tags_to_head');
