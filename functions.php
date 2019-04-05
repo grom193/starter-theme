@@ -20,6 +20,17 @@ if ( ! class_exists( 'Timber' ) ) {
     return;
 }
 
+if ( ! class_exists( 'Timmy\Timmy' ) ) {
+    add_action( 'admin_notices', function() {
+        echo '<div class="error"><p>Timmy not activated. Make sure you activate the plugin in <a href="' . esc_url( admin_url( 'plugins.php#timmy' ) ) . '">' . esc_url( admin_url( 'plugins.php' ) ) . '</a></p></div>';
+    });
+
+    add_filter('template_include', function( $template ) {
+        return get_stylesheet_directory() . '/static/no-timmy.html';
+    });
+
+    return;
+}
 /**
  * Sets the directories (inside your theme) to find .twig files
  */
