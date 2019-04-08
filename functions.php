@@ -298,7 +298,9 @@ function add_to_head_preload() {
     if (count($preloads) > 0) {
         $def = '<link rel="preload" href="' . get_template_directory_uri() . '%s" %s />';
         foreach ( $preloads as $item ) {
-            $output .= sprintf($def, $item['path'], $item['attributes']);
+            if (isset($item['path']) && isset($item['attributes'])) {
+                $output .= sprintf($def, $item['path'], $item['attributes']);
+            }
         }
     }
 
