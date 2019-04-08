@@ -442,8 +442,10 @@ remove_action('wp_print_styles', 'print_emoji_styles');
  * @return string
  */
 function vc_remove_wp_ver_css_js($src) {
-    if ( strpos( $src, 'ver=' ) )
+    if ( strpos( $src, 'ver=' ) ) {
         $src = remove_query_arg( 'ver', $src );
+    }
+
     return $src;
 }
 add_filter( 'style_loader_src', 'vc_remove_wp_ver_css_js', 9999 );
